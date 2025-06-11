@@ -48,8 +48,8 @@ def collect_process_metrics(ip, process_name):
         if not line.strip():
             continue
         try:
-            parts = line.split(None, 4)
-            if len(parts) < 5:
+            parts = line.split(None, 5)
+            if len(parts) < 6:
                 continue
             pid, cpu, mem, vsz, rss, cmd = parts
             if process_name in cmd:
@@ -82,7 +82,7 @@ def main(processes, interval):
                 metrics = collect_process_metrics(ip, proc)
                 if metrics:
                     for m in metrics:
-                        print(f"  Node: {m['node']}, PID: {m['pid']}, CPU%: {m['cpu%']:.2f}, MEM%: {m['mem%']:.2f}, VSZ: {m['vsz']}")
+                        print(f"  Node: {m['node']}, PID: {m['pid']}, CPU%: {m['cpu%']:.2f}, MEM%: {m['mem%']:.2f}, VSZ: {m['vsz']}, RSS: {m['rss']}")
                         data_storage[proc].append(m)
                 else:
                     print(f"  No {proc} processes found on {ip}")
