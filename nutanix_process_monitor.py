@@ -40,7 +40,7 @@ def ssh_run(ip, command):
     return result.stdout
 
 def collect_process_metrics(ip, process_name):
-    ps_command = "ps -eo pid,pcpu,pmem,vsz,comm | grep {} | grep -v grep".format(process_name)
+    ps_command = "ps -eo pid,pcpu,pmem,vsz,rss,comm | grep {} | grep -v grep".format(process_name)
     output = ssh_run(ip, ps_command)
     metrics = []
 
@@ -51,7 +51,7 @@ def collect_process_metrics(ip, process_name):
             parts = line.split(None, 4)
             if len(parts) < 5:
                 continue
-            pid, cpu, mem, vsz, cmd = parts
+            pid, cpu, mem, vsz, rss, cmd = parts
             if process_name in cmd:
                 metrics.append({
                     "timestamp": pd.Timestamp.now(),
@@ -59,7 +59,8 @@ def collect_process_metrics(ip, process_name):
                     "pid": int(pid),
                     "cpu%": float(cpu),
                     "mem%": float(mem),
-                    "vsz": int(vsz)
+                    "vsz": int(vsz),
+                    "rss": int(rss)
                 })
         except Exception as e:
             print(f"Error parsing line from {ip}: '{line}' -> {e}")
